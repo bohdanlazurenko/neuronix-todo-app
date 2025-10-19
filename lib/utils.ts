@@ -1,34 +1,27 @@
-import { Todo } from './types'
+import { Todo } from './types';
 
-const STORAGE_KEY = 'neuronix-todos'
+const STORAGE_KEY = 'neuronix-todos';
 
 export const getTodos = (): Todo[] => {
-  if (typeof window === 'undefined') return []
-  
+  if (typeof window === 'undefined') return [];
   try {
-    const stored = localStorage.getItem(STORAGE_KEY)
-    if (!stored) return []
-    
-    const todos = JSON.parse(stored)
-    return todos.map((todo: any) => ({
-      ...todo,
-      createdAt: new Date(todo.createdAt)
-    }))
-  } catch {
-    return []
+    const item = window.localStorage.getItem(STORAGE_KEY);
+    return item ? JSON.parse(item) : [];
+  } catch (error) {
+    console.error('Failed to load todos from localStorage:', error);
+    return [];
   }
-}
+};
 
 export const saveTodos = (todos: Todo[]): void => {
-  if (typeof window === 'undefined') return
-  
+  if (typeof window === 'undefined') return;
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos))
-  } catch {
-    // Silently fail if localStorage is not available
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+  } catch (error) {
+    console.error('Failed to save todos to localStorage:', error);
   }
-}
+};
 
 export const generateId = (): string => {
-  return Math.random().toString(36).substr(2, 9)
-}
+  return `todo-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+};
